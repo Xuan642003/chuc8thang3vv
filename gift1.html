@@ -2,109 +2,277 @@
 <html lang="vi">
 <head>
 <meta charset="UTF-8">
-<title>Chúc mừng 8/3</title>
+<title>Game 8/3</title>
 
 <style>
+
 body{
-    margin:0;
-    height:100vh;
-    overflow:hidden;
-    background: linear-gradient(#081421,#020b12);
-    font-family: Arial, sans-serif;
-}
-.back{
-    position:fixed;
-    top:15px;
-    left:15px;
-    width:40px;
-    height:40px;
-    background:#ffffffcc;
-    border-radius:50%;
-    display:flex;
-    align-items:center;
-    justify-content:center;
-    font-size:22px;
-    font-weight:bold;
-    cursor:pointer;
-    z-index:999;
-}
-.text-box{
-    position:absolute;
-    max-width:80%;
-    padding:14px 20px;
-    border-radius:25px;
-    font-size:30px;
-    font-weight:bold;
-    color:#333;
-
-    word-wrap: break-word;
-    white-space: normal;
-
-    animation: fall 16s linear infinite;
+margin:0;
+overflow:hidden;
+font-family:sans-serif;
+background:linear-gradient(120deg,#ff9ecf,#ffd6ec);
 }
 
-@keyframes fall{
-    0%{
-        top:-120px;
-        opacity:0;
-    }
-    10%{
-        opacity:1;
-    }
-    100%{
-        top:110vh;
-        opacity:0;
-    }
+/* điểm */
+
+#score{
+position:fixed;
+top:20px;
+left:20px;
+font-size:22px;
+font-weight:bold;
+background:white;
+padding:10px 20px;
+border-radius:20px;
 }
+
+/* chữ */
+
+.item{
+position:absolute;
+padding:10px 20px;
+border-radius:20px;
+font-weight:bold;
+}
+
+/* thanh */
+
+#bar{
+
+position:fixed;
+bottom:30px;
+
+width:150px;
+height:20px;
+
+background:#ff4da6;
+
+border-radius:10px;
+
+left:50%;
+transform:translateX(-50%);
+}
+
+/* màn thắng */
+
+#win{
+
+position:fixed;
+top:0;
+left:0;
+width:100%;
+height:100%;
+
+background:rgba(0,0,0,0.8);
+
+display:none;
+
+justify-content:center;
+align-items:center;
+flex-direction:column;
+
+color:white;
+text-align:center;
+}
+
+#win img{
+width:300px;
+border-radius:20px;
+margin-bottom:20px;
+}
+
 </style>
 </head>
 
 <body>
-<div class="back" onclick="history.back()">✖</div>
+
+<div id="score">Điểm: 0</div>
+
+<div id="bar"></div>
+
+<div id="win">
+
+<img src="anh1.jpg">
+
+<h1>CHÚC NGƯỜI MÀ TỚ THẦM THƯƠNG<br>8/3 VUI VẺ 🌸</h1>
+
+</div>
+
 <script>
 
-const messages = [
-"Chúc mừng 8/3 ❤️",
-"Chúc bạn luôn xinh đẹp",
-"Chúc bạn luôn hạnh phúc",
-"Chúc bạn luôn rạng rỡ",
-"Chúc bạn luôn thành công",
-"Chúc bạn luôn vui vẻ",
-"Chúc bạn luôn tỏa sáng",
-"Chúc bạn nhiều may mắn",
-"Chúc bạn luôn được yêu thương",
-"Chúc bạn luôn mạnh mẽ",
-"Chúc bạn luôn bình an",
-"Chúc bạn thật nhiều niềm vui",
-"Chúc bạn ngày càng xinh đẹp",
-"Chúc bạn luôn mỉm cười",
-"Chúc bạn luôn tràn đầy năng lượng",
-"Chúc bạn thật nhiều hạnh phúc",
-"Chúc bạn luôn tươi trẻ",
-"Chúc bạn luôn được quan tâm",
-"Chúc bạn luôn đáng yêu",
-"Happy Women's Day 🌸"
-];
+let score=0
+let speed=3
 
-messages.forEach((text,i)=>{
+const goal=100
 
-    const div=document.createElement("div");
-    div.className="text-box";
-    div.innerText=text;
+const texts=[
+"🌸 8/3 vui vẻ",
+"💐 luôn xinh đẹp",
+"🌷 luôn hạnh phúc",
+"🌹 luôn rạng rỡ",
+"🌺 nhiều niềm vui",
+"💖 nhiều may mắn",
+"🌼 luôn tỏa sáng"
+]
 
-    // delay xa hơn để tránh chồng
-    div.style.animationDelay = (i*2.5)+"s";
+const badItems=[
+"💣",
+"😈",
+"⚡"
+]
 
-    // vị trí ngang random
-    div.style.left = (10 + Math.random()*80)+"%";
+const bar=document.getElementById("bar")
 
-    // màu random
-    div.style.background =
-    "hsl("+Math.random()*360+",70%,85%)";
+let barX=window.innerWidth/2
 
-    document.body.appendChild(div);
-});
+/* di chuyển chuột */
+
+document.addEventListener("mousemove",e=>{
+barX=e.clientX
+bar.style.left=barX+"px"
+})
+
+/* di chuyển phím */
+
+document.addEventListener("keydown",e=>{
+
+if(e.key==="ArrowLeft"){
+
+barX-=40
+
+}
+
+if(e.key==="ArrowRight"){
+
+barX+=40
+
+}
+
+bar.style.left=barX+"px"
+
+})
+
+/* tạo vật */
+
+function createItem(){
+
+const div=document.createElement("div")
+
+div.className="item"
+
+let good=Math.random()>0.25
+
+if(good){
+
+div.innerText=texts[Math.floor(Math.random()*texts.length)]
+div.dataset.type="good"
+div.style.background="white"
+
+}else{
+
+div.innerText=badItems[Math.floor(Math.random()*badItems.length)]
+div.dataset.type="bad"
+div.style.background="#ff6666"
+
+}
+
+div.style.left=Math.random()*90+"%"
+div.style.top="-40px"
+
+document.body.appendChild(div)
+
+let y=0
+
+const fall=setInterval(()=>{
+
+y+=speed
+
+div.style.top=y+"px"
+
+const rect=div.getBoundingClientRect()
+const barRect=bar.getBoundingClientRect()
+
+if(
+
+rect.bottom>=barRect.top &&
+rect.left<barRect.right &&
+rect.right>barRect.left
+
+){
+
+if(div.dataset.type==="good"){
+
+score++
+
+showEffect("+1")
+
+}else{
+
+score-=5
+
+showEffect("-5")
+
+if(score<0) score=0
+
+}
+
+document.getElementById("score").innerText="Điểm: "+score
+
+div.remove()
+clearInterval(fall)
+
+/* tăng tốc */
+
+speed=3+score*0.05
+
+if(score>=goal){
+
+document.getElementById("win").style.display="flex"
+
+}
+
+}
+
+if(y>window.innerHeight){
+
+div.remove()
+clearInterval(fall)
+
+}
+
+},20)
+
+}
+
+/* hiệu ứng điểm */
+
+function showEffect(text){
+
+const e=document.createElement("div")
+
+e.innerText=text
+
+e.style.position="fixed"
+e.style.bottom="80px"
+e.style.left=barX+"px"
+e.style.fontSize="20px"
+e.style.fontWeight="bold"
+
+document.body.appendChild(e)
+
+setTimeout(()=>{
+
+e.remove()
+
+},700)
+
+}
+
+/* tạo vật liên tục */
+
+setInterval(createItem,900)
 
 </script>
+
 </body>
 </html>
